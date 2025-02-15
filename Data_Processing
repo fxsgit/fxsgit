@@ -1,0 +1,101 @@
+import csv
+from datetime import datetime
+
+class DataProcessor:
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.data = []
+
+    def read_data(self):
+        try:
+            with open(self.file_path, mode='r') as file:
+                csv_reader = csv.DictReader(file)
+                for row in csv_reader:
+                    self.data.append(row)
+            print("Data read successfully!")
+        except FileNotFoundError:
+            print(f"Error: The file {self.file_path} was not found.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    def process_data(self):
+        if not self.data:
+            print("No data to process.")
+            return
+
+        for record in self.data:
+            try:
+                # Convert date string to datetime object
+                record['date'] = datetime.strptime(record['date'], '%Y-%m-%d')
+                # Convert amount to float
+                record['amount'] = float(record['amount'])
+            except KeyError as ke:
+                print(f"Missing key in data: {ke}")
+            except ValueError as ve:
+                print(f"Error converting data: {ve}")
+
+    def display_data(self):
+        if not self.data:
+            print("No data to display.")
+            return
+
+        for record in self.data:
+            print(f"Date: {record['date'].strftime('%Y-%m-%d')}, Amount: ${record['amount']:.2f}")
+
+    def save_processed_data(self, output_file_path):
+        try:
+            with open(output_file_path, mode='w', newline='') as file:
+                fieldnames = ['date', 'amount']
+                csv_writer = csv.DictWriter(file, fieldnames=fieldnames)
+                csv_writer.writeheader()
+                for record in self.data:
+                    csv_writer.writerow({
+                        'date': record['date'].strftime('%Y-%m-%d'),
+                        'amount': record['amount']
+                    })
+            print(f"Processed data saved to {output_file_path}")
+        except Exception as e:
+            print(f"An error occurred while saving the data: {e}")
+
+# Example usage
+if __name__ == "__main__":
+    # Initialize the DataProcessor with the path to the CSV file
+    processor = DataProcessor('data.csv')
+
+    # Read the data from the CSV file
+    processor.read_data()
+
+    # Process the data (convert date and amount)
+    processor.process_data()
+
+    # Display the processed data
+    processor.display_data()
+
+    # Save the processed data to a new CSV file
+    processor.save_processed_data('processed_data.csv')
+Explanation:
+Object-Oriented Programming: The code is structured using a class DataProcessor, which encapsulates the data and methods for reading, processing, and saving data.
+
+File Handling: The code reads from and writes to CSV files using Python's csv module.
+
+Exception Handling: The code includes try-except blocks to handle potential errors such as file not found, missing keys, and data conversion issues.
+
+External Libraries: The datetime module is used to handle date formatting and conversion.
+
+Data Processing: The code processes the data by converting date strings to datetime objects and amounts to floats.
+
+Output: The processed data is displayed in the console and saved to a new CSV file.
+
+How to Use:
+Create a CSV file named data.csv with the following format:
+
+csv
+Copy
+date,amount
+2023-10-01,100.50
+2023-10-02,200.75
+2023-10-03,150.00
+Run the script. It will read the data, process it, display it, and save the processed data to processed_data.csv.
+
+This snippet showcases a variety of Python skills and can be easily extended or modified to fit different use cases.
+
